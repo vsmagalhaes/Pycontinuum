@@ -11,7 +11,6 @@ import numpy as np
 import os
 
 nthreads = ncpu()
-#nthreads = 1
 
 parser = argparse.ArgumentParser(description="MCMC tool to fit the continuum")
 parser.add_argument("input", type=str, help="initial guesses, alpha, plateau(''), density ratio")
@@ -52,28 +51,29 @@ obs1300 = ml.fits_obs("L1498_1250_fixed_sc_rp.fits", beam=11, freq=240e9, noise=
 
 
 
-if args.cut:
-    print "Using cut"
-    obs = [obs250, obs350, obs500]
-    #obs=[obs500]
-    for i in range(len(obs)):
-        obs[i].cut_profile([62.7175, 25.17222222], (-1, -2),200)
-        print obs[i].radii
-    obs1300.cut_profile(np.array([62.7175, 25.17222222]), (-1, -2), 130)
-    print obs1300.radii
-    obs.append(obs1300)
+# if args.cut:
+print "Using cut"
+obs = [obs250, obs350, obs500]
+#obs=[obs500]
+for i in range(len(obs)):
+    #        Center in RA DEC (degrees) "direction of cut" Maximal radius
+    obs[i].cut_profile([62.7175, 25.17222222], (-1, -2),200)
+    print obs[i].radii
+obs1300.cut_profile(np.array([62.7175, 25.17222222]), (-1, -2), 130)
+print obs1300.radii
+obs.append(obs1300)
 
 
-else:
-    ### out of date
-    print "not using cut"
-    obs = [obs250,obs350,obs500]
-    centers = [(301,301),(181,181),(130,130)]
-    for i in range(3):
-        obs[i].radial_profile(centers[i],17,500,pa=args.positionangle,ratio=args.aspectratio)
-
-    obs1300.radial_profile([55.5,62.0],11,150,pa=args.positionangle,ratio=args.aspectratio)
-    obs.append(obs1300)
+# else:
+#     ### out of date
+#     print "not using cut"
+#     obs = [obs250,obs350,obs500]
+#     centers = [(301,301),(181,181),(130,130)]
+#     for i in range(3):
+#         obs[i].radial_profile(centers[i],17,500,pa=args.positionangle,ratio=args.aspectratio)
+#
+#     obs1300.radial_profile([55.5,62.0],11,150,pa=args.positionangle,ratio=args.aspectratio)
+#     obs.append(obs1300)
 
 initial = args.initialize
 #exit()
@@ -84,33 +84,20 @@ else:
     pos = [itheta + gauss * np.random.rand(ndim) for i in range(nwalkers)]  # initial positions for each walker
     prevchain = None
 
-start = time.time()
-
-print("\nStarting Continumm MCMC fit\n")
-print("Time: "+str(datetime.now()))
-print
-print("**************************************\n")
-print("Progress:\n")
+#start = time.time()
 
 sampler = emcee.EnsembleSampler(nwalkers, ndim, ml.lnprob_abso,args=(priorinf,priorsup,fixed,fix,log,obs),threads=nthreads)
 
-width = 30
-for i, (pos,lnp,state) in enumerate(sampler.sample(pos,iterations=nit)):
-    n = int((width+1) * float(i) / nit)
-    sys.stdout.write("\r{2}/{4} - [{0}{1}] - {3:s}"
-                     "".format('#' * n, ' ' * (width - n),i+1,mcu.etf(start,i+1,nit),nit))
-    mcu.savechain(sampler.chain,"tmp",i+1,nit,prevchain)
-sys.stdout.write("\r{0:s}, {1}/{1} - [{2}]\n".format(mcu.progress(start),nit,width*'#'))
-
-mcu.savechain(sampler.chain,args.outputname,nit,nit,prevchain)
-os.system("rm tmp.fits")
+mcu.run_sampler(sampler,pos,nit,prevchain,args.outputname)
 
 print "\n\nPlotting walkers\n"
 
-mcu.plot_walkers(args.outputname,legends)
+mcu.plot_walkers(args.outputname, legends)
 
 print "Making corner plot\n"
 
-mcu.run_corner(args.outputname,[0,int(0.1*nit),int(0.3*nit),int(0.5*nit)],legends,savevals=True)
+mcu.run_corner(args.outputname,[nit/2],legends)
 
-mcu.took(start)
+answer = mcu.bestfit(args.outputname, legends, log[~fix], burnin=int(nit/2), save=True, plot=True,fontsize=10)
+
+#mcu.took(start)
