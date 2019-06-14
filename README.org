@@ -1,0 +1,9 @@
+* Python dependencies
+
+numpy
+matplotlib
+astropy
+scipy
+reproject
+emcee 
+corner

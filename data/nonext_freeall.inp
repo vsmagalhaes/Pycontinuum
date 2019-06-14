@@ -1,0 +1,30 @@
+### Inputs for MCMC fit to the continuum of L1498
+### structure:
+### Par name
+### initial[0]  Priorinf[1]  Priorsup[2]  Fix[3]  logscale[4] |Legend[5]
+### Desity pars -----------------------------
+### central Density log(cm -3)
+4.94           4	     6	          0	  1	      |$log(n_{0})$
+### External Density log(cm-3)	
+0               2	     3.7	  1	  0           |$log(n_{ext})$
+### Plateau size (arc seconds)
+55 	        30           120          0	  0	      |$r_0$
+### Density profile slope
+4.2            1  	     6	          0	  0	      |$\alpha$
+### Temperature pars -------------------------
+### Initial kinetic temperature (K)
+10              2.7325	     15           0	  0	      |T$_{0}$
+### kinetic temperature at +inf (K)
+16	        10	     18 	  0	  0	      |T$_{ext}$
+### kinetic temperature jump pos (arc seconds)
+60          	0	     100	  0	  0	      |$r_{tjump}$
+### kinetic temperature jump width (arc seconds)
+25	        0	     50           0	  0	      |$\Delta r_{tjump}$
+### Geometrical parameters -------------------
+### Model radius (arc seconds)
+1000             300	     500          1	  0	      |Radius
+### Distance (pc)
+140             120	     160          1	  0	      |Distance
+### Emissivity parameters--------------------
+### Dust opacity spectral index
+1.8             1.0          3.0          0       0           |$\beta$
