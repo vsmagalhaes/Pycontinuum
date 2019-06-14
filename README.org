@@ -7,3 +7,22 @@ scipy
 reproject
 emcee 
 corner
+
+
+* usage 
+
+The code needs an Input file describing the parameters to be fitted.
+An example of such an input file is nonext_freeall.inp.
+
+to execute (must be in the folder with the data):
+
+python ../src/cont_fit_mcmc_abso.py nonext_freeall.inp outputname [options]
+
+To get help on the options do:
+
+python ../src/cont_fit_mcmc_abso.py -h
+
+with the options you can control the fitting parameters, number of
+MCMC steps, number of walkers etc.
+
+In case of doubts let me know.
